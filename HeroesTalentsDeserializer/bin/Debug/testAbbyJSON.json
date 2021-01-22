@@ -1,0 +1,10 @@
+{
+  "id": "1",
+  "shortName": "abathur",
+  "attributeId": "Abat",
+  "name": "Abathur",
+  "icon": "abathur.png",
+  "role": "Specialist",
+  "type": "Melee",
+  "releaseDate": "2014-03-13"
+ }
