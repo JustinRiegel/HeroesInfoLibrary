@@ -3,9 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace HeroesInfoBot
 {
@@ -13,7 +11,7 @@ namespace HeroesInfoBot
     {
         private static List<HeroData> _heroDataList = new List<HeroData>();
 
-        public static void SetUpHeroDataList(HeroDataDbContext context)
+        public static void SetUpHeroDataList(HeroDataDbContext context, string jsonLocation)
         {
             string jsonStringData;
 
@@ -22,8 +20,7 @@ namespace HeroesInfoBot
             context.Database.EnsureDeleted();
             context.Database.EnsureCreated();
 
-            //TODO: change this path to point to wherever in the solution i store the json files
-            foreach (var file in Directory.EnumerateFiles(@"D:\GitHub Repos\heroes-talents\hero"))
+            foreach (var file in Directory.EnumerateFiles(jsonLocation))
             {
                 using (var fs = new FileStream(file, FileMode.Open))
                 {
@@ -35,9 +32,11 @@ namespace HeroesInfoBot
 
                 dynamic jsonObj = JsonConvert.DeserializeObject(jsonStringData);
 
-                var hero = JsonConvert.DeserializeObject<Hero>(Convert.ToString(jsonObj));
+                Hero hero = JsonConvert.DeserializeObject<Hero>(Convert.ToString(jsonObj));
                 var abilityList = new List<Ability>();
                 var talentList = new List<Talent>();
+                var tempAbility = new Ability();
+                var tempTalent = new Talent();
 
                 //for the heroes with multiple "profiles", such as abathur and abathur's hat, we need to loop over
                 //all of them so we get the entire moveset
@@ -49,7 +48,10 @@ namespace HeroesInfoBot
                         //loop over each profile and add it to the ability list
                         foreach (var ability in profile)
                         {
-                            abilityList.Add(JsonConvert.DeserializeObject<Ability>(Convert.ToString(ability)));
+                            tempAbility = JsonConvert.DeserializeObject<Ability>(Convert.ToString(ability));
+                            tempAbility.ShortName = GetShortName(tempAbility);
+                            tempAbility.HeroName = hero.Name;//im using the full name instead of the shortname here because it will be displayed to the user
+                            abilityList.Add(tempAbility);
                         }
                     }
                 }
@@ -68,8 +70,11 @@ namespace HeroesInfoBot
                         foreach (var talent in talents)
                         {
                             //add the talent tier to the json data
-                            talent["talentTier"] = $"{talentTierNumber}";
-                            talentList.Add(JsonConvert.DeserializeObject<Talent>(Convert.ToString(talent)));
+                            talent["talentTier"] = talentTier.Name;
+                            tempTalent = JsonConvert.DeserializeObject<Talent>(Convert.ToString(talent));
+                            tempTalent.ShortName = GetShortName(tempTalent);
+                            tempTalent.HeroName = hero.Name;//im using the full name instead of the shortname here because it will be displayed to the user
+                            talentList.Add(tempTalent);
                         }
                     }
                     ++talentTierNumber;
@@ -102,6 +107,22 @@ namespace HeroesInfoBot
             }
 
             context.SaveChanges();
+        }
+
+        private static string GetShortName(Ability ability)
+        {
+            var shortName = ability.Name.ToLower();
+            var regex = new Regex("[^a-zA-Z ]");
+            shortName = regex.Replace(shortName, "");
+            return shortName;
+        }
+
+        private static string GetShortName(Talent talent)
+        {
+            var shortName = talent.Name.ToLower();
+            var regex = new Regex("[^a-zA-Z ]");
+            shortName = regex.Replace(shortName, "");
+            return shortName;
         }
     }
 }

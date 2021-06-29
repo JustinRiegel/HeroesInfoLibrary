@@ -1,9 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HeroesInfoBot.Models
 {
@@ -11,10 +6,16 @@ namespace HeroesInfoBot.Models
     {
         public string Id { get; set; }
 
-        public string HeroId { get; set; }
+        public string HeroId { get; set; }//TODO do i still need heroId here, now that ive added HeroName
+
+        [JsonProperty(PropertyName = "heroName")]
+        public string HeroName { get; set; }
 
         [JsonProperty(PropertyName = "name")]
         public string Name { get; set; }
+
+        [JsonProperty(PropertyName = "shortName")]
+        public string ShortName { get; set; }
 
         [JsonProperty(PropertyName = "description")]
         public string Description { get; set; }

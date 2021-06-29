@@ -95,10 +95,10 @@ namespace HeroesInfoBot
             serviceStatus.dwWaitHint = 100000;
             SetServiceStatus(this.ServiceHandle, ref serviceStatus);
 
-            var context = new HeroDataDbContext();
-            eventLog.WriteEntry("Creating database for Heroes info...");
+            //var context = new HeroDataDbContext();
+            //eventLog.WriteEntry("Creating database for Heroes info...");
 
-            HeroesInfoBotContextSeeder.SetUpHeroDataList(context);
+            //HeroesInfoBotContextSeeder.SetUpHeroDataList(context);
 
             eventLog.WriteEntry("Database created. Hopefully.");
 
