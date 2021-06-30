@@ -2,12 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
 
 namespace HeroesInfoBot
 {
-    static class Program
+    public class HeroesBot
     {
         private const string GetAbilityByNameQueryString = "SELECT * FROM Ability WHERE ShortName LIKE '%{0}%'";
         private const string GetTalentByNameQueryString = "SELECT * FROM Talent WHERE ShortName LIKE '%{0}%'";
@@ -26,22 +25,39 @@ namespace HeroesInfoBot
                 INNER JOIN Hero h
                 ON h.Id = a.HeroId
                 WHERE h.ShortName LIKE '%{0}%' AND a.ShortName LIKE '%{1}%'";
-        private static List<string> AbilityKeys = new List<string>() { "q", "w", "e", "r", "d", "1", "2", "3", "4", "5", "6" };
-        private static List<string> Level10TalentTierExceptions = new List<string>() { "deathwing", "tracer", "varian" };
+        private List<string> AbilityKeys = new List<string>() { "q", "w", "e", "r", "d", "1", "2", "3", "4", "5", "6" };
+        private List<string> Level10TalentTierExceptions = new List<string>() { "deathwing", "tracer", "varian" };
 
-        static HeroDataDbContext DbContext;
+        private HeroDataDbContext _dbContext;
+        private HeroesInfoBotContextSeeder _contextSeeder;
 
         /// <summary>
-        /// The main entry point for the application.
+        /// Constructor for the now-poorly-named HeroesInfoBot.
         /// </summary>
-        static void Main(string[] args)
+        /// <param name="jsonLocation">File path to the folder with the Hero JSON data. Relative paths should work fine.</param>
+        /// <param name="dbLocation">File path to where the database file will be created/reference. Relative paths should work fine.</param>
+        public HeroesBot(string jsonLocation, string dbLocation)
         {
-            var jsonLocation = ConfigurationManager.AppSettings.Get("jsonDataLocation");
-            var dbLocation = ConfigurationManager.AppSettings.Get("databaseLocation");
+            _dbContext = new HeroDataDbContext(dbLocation);
+            _contextSeeder = new HeroesInfoBotContextSeeder();
+            _contextSeeder.SetUpHeroDataList(_dbContext, jsonLocation);
+        }
 
-            DbContext = new HeroDataDbContext(dbLocation);
+        /// <summary>
+        /// The method to call to get Ability and Talent data. Supported forms of input are (case insensitive):
+        /// [[Ability or Talent name]], i.e. [[Once Again the First Time]]
+        /// [[Hero name/Talent name]], i.e. [[Chromie/Andorhal Anomaly]]
+        /// [[Hero name/Ability name]], i.e. [[Chromie/Sand Blast]]
+        /// [[Hero name/Ability hotkey]], i.e [[Chromie/Q]], works for Q,W,E,R,D,Trait,1,2,3,4,5,6
+        /// </summary>
+        /// <param name="input">The input string used to fetch the appropriate data. Despite the examples I gave in the method summary, the [[ ]] should be stripped out before passing it in.</param>
+        /// <returns>Returns a List of strings, each entry of which is already formatted for display to the user.</returns>
+        public List<string> GetAbilityAndTalentDataByString(string input)
+        {
+            //var jsonLocation = ConfigurationManager.AppSettings.Get("jsonDataLocation");
+            //var dbLocation = ConfigurationManager.AppSettings.Get("databaseLocation");
 
-            HeroesInfoBotContextSeeder.SetUpHeroDataList(DbContext, jsonLocation);
+            
             //CASE 1 (DONE) - talents and abilities by name [[Pyroblast]], [[Possession]]
             //CASE 2 (DONE) - all talents by hero's tier [[Lunara/4]], [[Butcher/10]]. because all talent tier levels are the same, extra logic will be needed to account for chromie
             //CASE 3 (DONE) - abilities by hero and slot [[Varian/W]], [[Murky/Trait]]
@@ -53,22 +69,13 @@ namespace HeroesInfoBot
             //exclude preceeding "the"s, punctuation, numbers
             //NOTE: the shortname for Butcher is "thebutcher" but the shortname for TLV is "lostvikings". one has the "the", one does not, so maybe a query with each?
             
-            var input = string.Empty;
-            var results = new List<CleanResultData>();
-            do
-            {
-                input = Console.ReadLine();
-                if(input != "q")
-                {
-                    results = ProcessUserInput(input);
-                }
-
-                results.ForEach(r => Console.WriteLine(r.ToString()));
-                Console.WriteLine("****************************************");
-            } while (input != "q");
+            var results = ProcessUserInput(input.ToLower());
+            var returnList = new List<string>();
+            results.ForEach(r => returnList.Add(r.ToString()));
+            return returnList;
         }
 
-        private static List<CleanResultData> ProcessUserInput(string input)
+        private List<CleanResultData> ProcessUserInput(string input)
         {
             var resultList = new List<CleanResultData>();
             //does the input contain the separator character
@@ -97,8 +104,7 @@ namespace HeroesInfoBot
                 else
                 {
                     //second part was not a talent tier or an ability key, so search by ability name
-                    //TODO maybe also make it search by talent name in case someone wants to be really clever?
-
+                    //TODO maybe also make it search by talent name in case someone wants to be really clever? or do i say that's covered by the first case?
                     resultList = GetByHeroNameAndAbilityName(inputPartOne, inputPartTwo);
 
                 }
@@ -111,11 +117,11 @@ namespace HeroesInfoBot
             return resultList;
         }
 
-        private static List<CleanResultData> GetByAbilityOrTalentName(string name)
+        private List<CleanResultData> GetByAbilityOrTalentName(string name)
         {
             var returnList = new List<CleanResultData>();
-            var abilityList = DbContext.Ability.FromSql(string.Format(GetAbilityByNameQueryString, name)).ToList();
-            var talentList = DbContext.Talent.FromSql(string.Format(GetTalentByNameQueryString, name)).ToList();
+            var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByNameQueryString, name)).ToList();
+            var talentList = _dbContext.Talent.FromSql(string.Format(GetTalentByNameQueryString, name)).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             talentList = talentList.Where(tl => !abilityList.Exists(a => a.AbilityId == tl.AbilityId)).ToList();
             talentList.ForEach((t) => { returnList.Add(GetCleanResultData(t)); });
@@ -123,7 +129,7 @@ namespace HeroesInfoBot
             return returnList;
         }
 
-        private static List<CleanResultData> GetByHeroNameAndTalentTier(string heroName, string talentTier)
+        private List<CleanResultData> GetByHeroNameAndTalentTier(string heroName, string talentTier)
         {
             //need to check for heroic talent tier and if it is, return the heroic abilities instead.
             //exceptions: varian gets his at 4, tracer and deathwing both have theirs at the start and should return talents like normal
@@ -157,33 +163,33 @@ namespace HeroesInfoBot
                         break;
                 }
             }
-            var talentList = DbContext.Talent.FromSql(string.Format(GetTalentTierByHeroNameQueryString, heroName, talentTier)).ToList();
+            var talentList = _dbContext.Talent.FromSql(string.Format(GetTalentTierByHeroNameQueryString, heroName, talentTier)).ToList();
             talentList.ForEach((t) => { returnList.Add(GetCleanResultData(t)); });
 
             return returnList;
         }
 
-        private static List<CleanResultData> GetByHeroNameAndAbilityHotkey(string heroName, string hotkey)
+        private List<CleanResultData> GetByHeroNameAndAbilityHotkey(string heroName, string hotkey)
         {
             var returnList = new List<CleanResultData>();
             if(hotkey == "trait")
             {
                 hotkey = "d";
             }
-            var abilityList = DbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndHotkeyQueryString, heroName, hotkey)).ToList();
+            var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndHotkeyQueryString, heroName, hotkey)).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             return returnList;
         }
 
-        private static List<CleanResultData> GetByHeroNameAndAbilityName(string heroName, string abilityName)
+        private List<CleanResultData> GetByHeroNameAndAbilityName(string heroName, string abilityName)
         {
             var returnList = new List<CleanResultData>();
-            var abilityList = DbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndAbilityNameQueryString, heroName, abilityName)).ToList();
+            var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndAbilityNameQueryString, heroName, abilityName)).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             return returnList;
         }
 
-        private static CleanResultData GetCleanResultData(Ability ability)
+        private CleanResultData GetCleanResultData(Ability ability)
         {
             return new CleanResultData(
                 ability.HeroName,
@@ -196,7 +202,7 @@ namespace HeroesInfoBot
                 );
         }
 
-        private static CleanResultData GetCleanResultData(Talent talent)
+        private CleanResultData GetCleanResultData(Talent talent)
         {
             return new CleanResultData(
                 talent.HeroName,

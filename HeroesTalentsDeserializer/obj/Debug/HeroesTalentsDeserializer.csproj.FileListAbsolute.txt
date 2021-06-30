@@ -154,3 +154,8 @@ D:\GitHub Repos\KhadgarBot\HeroesTalentsDeserializer\bin\Debug\System.Interactiv
 D:\GitHub Repos\KhadgarBot\HeroesTalentsDeserializer\bin\Debug\System.Runtime.CompilerServices.Unsafe.xml
 D:\GitHub Repos\KhadgarBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.exe.config
 D:\GitHub Repos\KhadgarBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.csproj.CopyComplete
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.csproj.AssemblyReference.cache
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.exe.config
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.csproj.CoreCompileInputs.cache
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.exe
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesTalentsDeserializer\obj\Debug\HeroesTalentsDeserializer.pdb

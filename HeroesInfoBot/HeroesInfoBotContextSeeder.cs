@@ -7,11 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace HeroesInfoBot
 {
-    public static class HeroesInfoBotContextSeeder
+    public class HeroesInfoBotContextSeeder
     {
-        private static List<HeroData> _heroDataList = new List<HeroData>();
+        private List<HeroData> _heroDataList = new List<HeroData>();
 
-        public static void SetUpHeroDataList(HeroDataDbContext context, string jsonLocation)
+        public void SetUpHeroDataList(HeroDataDbContext context, string jsonLocation)
         {
             string jsonStringData;
 
@@ -109,7 +109,7 @@ namespace HeroesInfoBot
             context.SaveChanges();
         }
 
-        private static string GetShortName(Ability ability)
+        private string GetShortName(Ability ability)
         {
             var shortName = ability.Name.ToLower();
             var regex = new Regex("[^a-zA-Z ]");
@@ -117,7 +117,7 @@ namespace HeroesInfoBot
             return shortName;
         }
 
-        private static string GetShortName(Talent talent)
+        private string GetShortName(Talent talent)
         {
             var shortName = talent.Name.ToLower();
             var regex = new Regex("[^a-zA-Z ]");

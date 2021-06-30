@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HeroesInfoBot</name>
+    </assembly>
+    <members>
+        <member name="F:HeroesInfoBot.ProjectInstaller.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:HeroesInfoBot.ProjectInstaller.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:HeroesInfoBot.ProjectInstaller.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="F:HeroesInfoBot.HeroesInfoBotService.components">
+            <summary> 
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:HeroesInfoBot.HeroesInfoBotService.Dispose(System.Boolean)">
+            <summary>
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:HeroesInfoBot.HeroesInfoBotService.InitializeComponent">
+            <summary> 
+            Required method for Designer support - do not modify 
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:HeroesInfoBot.HeroesBot.#ctor(System.String,System.String)">
+            <summary>
+            Constructor for the now-poorly-named HeroesInfoBot.
+            </summary>
+            <param name="jsonLocation">File path to the folder with the Hero JSON data. Relative paths should work fine.</param>
+            <param name="dbLocation">File path to where the database file will be created/reference. Relative paths should work fine.</param>
+        </member>
+        <member name="M:HeroesInfoBot.HeroesBot.GetAbilityAndTalentDataByString(System.String)">
+            <summary>
+            The method to call to get Ability and Talent data. Supported forms of input are (case insensitive):
+            [[Ability or Talent name]], i.e. [[Once Again the First Time]]
+            [[Hero name/Talent name]], i.e. [[Chromie/Andorhal Anomaly]]
+            [[Hero name/Ability name]], i.e. [[Chromie/Sand Blast]]
+            [[Hero name/Ability hotkey]], i.e [[Chromie/Q]], works for Q,W,E,R,D,Trait,1,2,3,4,5,6
+            </summary>
+            <param name="input">The input string used to fetch the appropriate data. Despite the examples I gave in the method summary, the [[ ]] should be stripped out before passing it in.</param>
+            <returns>Returns a List of strings, each entry of which is already formatted for display to the user.</returns>
+        </member>
+    </members>
+</doc>
