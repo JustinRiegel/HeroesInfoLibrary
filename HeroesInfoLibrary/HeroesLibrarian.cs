@@ -1,30 +1,158 @@
 ﻿using HeroesInfoLibrary.Models;
-using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace HeroesInfoLibrary
 {
     public class HeroesLibrarian
     {
+        #region Member variables 
         private List<string> AbilityKeys = new List<string>() { "q", "w", "e", "r", "d", "1", "2", "3", "4", "5", "6" };
         private List<string> Level10TalentTierExceptions = new List<string>() { "deathwing", "tracer", "varian" };
 
         private HeroDataDbContext _dbContext;
-        private HeroesInfoBotContextSeeder _contextSeeder;
+        private List<HeroData> _heroDataList = new List<HeroData>();
+
+        #endregion
+
+        #region Constructor
 
         /// <summary>
-        /// Constructor for the now-poorly-named HeroesInfoBot.
+        /// Constructor for the HeroesLibrarian, able to fetch all the Heroes data you need from the library.
         /// </summary>
         /// <param name="jsonLocation">File path to the folder with the Hero JSON data. Relative paths should work fine.</param>
         /// <param name="dbLocation">File path to where the database file will be created/reference. Relative paths should work fine.</param>
         public HeroesLibrarian(string jsonLocation, string dbLocation)
         {
             _dbContext = new HeroDataDbContext(dbLocation);
-            _contextSeeder = new HeroesInfoBotContextSeeder();
-            _contextSeeder.SetUpHeroDataList(_dbContext, jsonLocation);
+            SetUpHeroDataList(jsonLocation);
         }
+
+        #endregion
+
+        #region Database creation
+
+        private void SetUpHeroDataList(string jsonLocation)
+        {
+            string jsonStringData;
+
+            SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_e_sqlite3());
+
+            _dbContext.Database.EnsureDeleted();
+            _dbContext.Database.EnsureCreated();
+
+            foreach (var file in Directory.EnumerateFiles(jsonLocation))
+            {
+                using (var fs = new FileStream(file, FileMode.Open))
+                {
+                    using (var sr = new StreamReader(fs))
+                    {
+                        jsonStringData = sr.ReadToEnd();
+                    }
+                }
+
+                dynamic jsonObj = JsonConvert.DeserializeObject(jsonStringData);
+
+                Hero hero = JsonConvert.DeserializeObject<Hero>(Convert.ToString(jsonObj));
+                var abilityList = new List<Ability>();
+                var talentList = new List<Talent>();
+                var tempAbility = new Ability();
+                var tempTalent = new Talent();
+
+                //for the heroes with multiple "profiles", such as abathur and abathur's hat, we need to loop over
+                //all of them so we get the entire moveset
+                foreach (var abilityProfile in jsonObj["abilities"])
+                {
+                    //this will only have one entry in it per profile. i think...
+                    foreach (var profile in abilityProfile)
+                    {
+                        //loop over each profile and add it to the ability list
+                        foreach (var ability in profile)
+                        {
+                            tempAbility = JsonConvert.DeserializeObject<Ability>(Convert.ToString(ability));
+                            tempAbility.ShortName = GetShortName(tempAbility);
+                            tempAbility.HeroName = hero.Name;//im using the full name instead of the shortname here because it will be displayed to the user
+                            abilityList.Add(tempAbility);
+                        }
+                    }
+                }
+
+                //im using tiers (1,2,3,...) instead of level (1,4,7,...) because its more consistent when considering
+                //heroes like chromie who get talents at different levels
+                var talentTierNumber = 1;
+
+                //talents are organized by tier, so loop over each tier to get the talents from each
+                foreach (var talentTier in jsonObj["talents"])
+                {
+                    //this will only have one entry in it per tier. i think...
+                    foreach (var talents in talentTier)
+                    {
+                        //loop over each talent in the tier and add it to the talent list
+                        foreach (var talent in talents)
+                        {
+                            //add the talent tier to the json data
+                            talent["talentTier"] = talentTier.Name;
+                            tempTalent = JsonConvert.DeserializeObject<Talent>(Convert.ToString(talent));
+                            tempTalent.ShortName = GetShortName(tempTalent);
+                            tempTalent.HeroName = hero.Name;//im using the full name instead of the shortname here because it will be displayed to the user
+                            talentList.Add(tempTalent);
+                        }
+                    }
+                    ++talentTierNumber;
+                }
+
+                _heroDataList.Add(new HeroData(hero, abilityList, talentList));
+            }
+
+            string heroGuid;
+
+            foreach (var hero in _heroDataList)
+            {
+                heroGuid = Guid.NewGuid().ToString();
+                hero.Hero.Id = heroGuid;
+                _dbContext.Hero.Add(hero.Hero);
+
+                foreach (var ability in hero.Abilities)
+                {
+                    ability.Id = Guid.NewGuid().ToString();
+                    ability.HeroId = heroGuid;
+                    _dbContext.Ability.Add(ability);
+                }
+
+                foreach (var talent in hero.Talents)
+                {
+                    talent.Id = Guid.NewGuid().ToString();
+                    talent.HeroId = heroGuid;
+                    _dbContext.Talent.Add(talent);
+                }
+            }
+
+            _dbContext.SaveChanges();
+        }
+
+        private string GetShortName(Ability ability)
+        {
+            var shortName = ability.Name.ToLower();
+            var regex = new Regex("[^a-zA-Z ]");
+            shortName = regex.Replace(shortName, "");
+            return shortName;
+        }
+
+        private string GetShortName(Talent talent)
+        {
+            var shortName = talent.Name.ToLower();
+            var regex = new Regex("[^a-zA-Z ]");
+            shortName = regex.Replace(shortName, "");
+            return shortName;
+        }
+
+        #endregion
+
+        #region Input processing 
 
         /// <summary>
         /// The method to call to get Ability and Talent data. Supported forms of input are (case insensitive):
@@ -33,7 +161,7 @@ namespace HeroesInfoLibrary
         /// [[Hero name/Ability name]], i.e. [[Chromie/Sand Blast]]
         /// [[Hero name/Ability hotkey]], i.e [[Chromie/Q]], works for Q,W,E,R,D,Trait,1,2,3,4,5,6
         /// </summary>
-        /// <param name="input">The input string used to fetch the appropriate data. Despite the examples I gave in the method summary, the [[ ]] should be stripped out before passing it in.</param>
+        /// <param name="input">The input string used to fetch the appropriate data. Despite the examples in the method summary, the [[ ]] should be stripped out before passing it in.</param>
         /// <returns>Returns a List of strings, each entry of which is already formatted for display to the user.</returns>
         public List<string> GetAbilityAndTalentDataByString(string input)
         {
@@ -45,13 +173,16 @@ namespace HeroesInfoLibrary
             //CASE 2 (DONE) - all talents by hero's tier [[Lunara/4]], [[Butcher/10]]. because all talent tier levels are the same, extra logic will be needed to account for chromie
             //CASE 3 (DONE) - abilities by hero and slot [[Varian/W]], [[Murky/Trait]]
             //CASE 4 (DONE) - talents and abilities by hero and name [[Dehaka/Drag]], [[Chromie/Time Trap]]
+
+            //possible TODOs:
             //parital names, such as [[kael/flames]], [[morales]], [[hammer]]
-            //this is a maybe, but probably not - prioritize better matches, i.e. [[Block]] should show Block before Ice Block
+            //      this is a maybe, but probably not - prioritize better matches, i.e. [[Block]] should show Block before Ice Block
             //      (probably through wildcard only at the end, Block%, then at both ends, %Block%)
             //      im thinking this is a no, because there are better ways to implement partial match results
-            //exclude preceeding "the"s, punctuation, numbers
-            //NOTE: the shortname for Butcher is "thebutcher" but the shortname for TLV is "lostvikings". one has the "the", one does not, so maybe a query with each?
-            
+            //      exclude preceeding "the"s, punctuation, numbers
+            //      NOTE: the shortname for Butcher is "thebutcher" but the shortname for TLV is "lostvikings". one has the "the", one does not, so maybe a query with each?
+            //a query to get all talents that affect a specific hotkey/ability?
+
             var results = ProcessUserInput(input.ToLower());
             var returnList = new List<string>();
             results.ForEach(r => returnList.Add(r.ToString()));
@@ -67,10 +198,18 @@ namespace HeroesInfoLibrary
                 var inputPartOne = input.Split('/')[0];
                 var inputPartTwo = input.Split('/')[1];
 
+                //clean up input a bit to account for some name weirdness in the database.
+                //TODO: this is honestly just a sto-gap, because i'd really like to have a column in the hero table that is a semicolon-delimited list of "similar names".
+                //then i wouldn't need to do these one-off checks, just check the list of not-quite-names to get the actual ShortName of the Hero.
+                //it could even be parsed in from a file so that anyone using this library can easily add other matches
                 if (inputPartOne == "butcher")
                 {
                     //the user put in "butcher" but its called The Butcher in the database
                     inputPartOne = "thebutcher";
+                }
+                else if((inputPartOne.Contains("lost") && inputPartOne.Contains("vikings")) || inputPartOne.Contains("tlv"))
+                {
+                    inputPartOne = "lostvikings";
                 }
 
                 //if the second part is numeric or is an ability key, we want to use both those queries, as there is overlap between number buttons and talent tiers
@@ -99,6 +238,10 @@ namespace HeroesInfoLibrary
 
             return resultList;
         }
+
+        #endregion
+
+        #region Database queries
 
         private List<CleanResultData> GetByAbilityOrTalentName(string name)
         {
@@ -195,6 +338,8 @@ namespace HeroesInfoLibrary
             return returnList;
         }
 
+        #endregion
+
         private CleanResultData GetCleanResultData(Ability ability)
         {
             return new CleanResultData(
@@ -222,14 +367,12 @@ namespace HeroesInfoLibrary
         }
     }
 
-    class CleanResultData
+    /// <summary>
+    /// CleanResultData is a semi-abstracted class capable of holding pertinent data from both Abilities and Talents to be displayed to the user through the ToString() override.
+    /// It is meant to be able to hold data from both Abilities and Talents, but each of those has fields the other doesn't that need to be displayed.
+    /// </summary>
+    public class CleanResultData
     {
-        //name
-        //hotkey (including active or passive or null for talents)
-        //what talent tier it is, if its a talent
-        //description
-        //cooldown
-        //mana cost
         public string HeroName { get; private set; }
         public string Name { get; private set; }
         public string Hotkey { get; private set; }
@@ -257,7 +400,18 @@ namespace HeroesInfoLibrary
             HeroName = heroName;
             Name = name;//ability or talent name
             Hotkey = hotkey;
-            TalentTier = tier;
+            //chromie out here being special again
+            if (heroName != "Chromie" || string.IsNullOrEmpty(tier))
+            {
+                TalentTier = tier;
+            }
+            else
+            {
+                //tier should always be a number by this point
+                var chromieIsASpecialCase = Int32.Parse(tier) - 2;
+                //set the tier to 1 if it's below that after subtracting 2 above (accounting for level 1 talents)
+                TalentTier = chromieIsASpecialCase > 1 ? chromieIsASpecialCase.ToString() : "1";
+            }
             Description = description;
             Cooldown = cooldown;
             ManaCost = mana;
@@ -265,6 +419,7 @@ namespace HeroesInfoLibrary
 
         public override string ToString()
         {
+            //TODO add specific statement denoting Talent or Ability?
             if(string.IsNullOrEmpty(TalentTier))//talent tier is empty, so its an ability
             {
                 return $"{Name} ({HeroName}) - " + (string.IsNullOrEmpty(Hotkey) ? string.Empty : $"[{Hotkey}]{Environment.NewLine}") +

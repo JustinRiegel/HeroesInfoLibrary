@@ -313,4 +313,4 @@ C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoBot.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoBot.pdb
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.ProjectInstaller.resources
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.HeroesInfoBotService.resources
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.csproj.AssemblyReference.cache

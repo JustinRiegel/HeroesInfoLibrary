@@ -206,18 +206,11 @@
     <Compile Include="Models\Hero.cs" />
     <Compile Include="Models\HeroData.cs" />
     <Compile Include="Models\Talent.cs" />
-    <Compile Include="HeroesInfoBotContextSeeder.cs" />
     <Compile Include="ProjectInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="ProjectInstaller.Designer.cs">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
-    </Compile>
-    <Compile Include="HeroesInfoBotService.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HeroesInfoBotService.Designer.cs">
-      <DependentUpon>HeroesInfoBotService.cs</DependentUpon>
     </Compile>
     <Compile Include="HeroesLibrarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -229,9 +222,6 @@
   <ItemGroup>
     <EmbeddedResource Include="ProjectInstaller.resx">
       <DependentUpon>ProjectInstaller.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HeroesInfoBotService.resx">
-      <DependentUpon>HeroesInfoBotService.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
