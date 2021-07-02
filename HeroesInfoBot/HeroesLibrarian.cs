@@ -6,25 +6,8 @@ using System.Linq;
 
 namespace HeroesInfoBot
 {
-    public class HeroesBot
+    public class HeroesLibrarian
     {
-        private const string GetAbilityByNameQueryString = "SELECT * FROM Ability WHERE ShortName LIKE '%{0}%'";
-        private const string GetTalentByNameQueryString = "SELECT * FROM Talent WHERE ShortName LIKE '%{0}%'";
-        private const string GetTalentTierByHeroNameQueryString =
-            @"SELECT t.* FROM Talent t
-                INNER JOIN Hero h
-                ON h.Id = t.HeroId
-                WHERE h.ShortName LIKE '%{0}%' AND t.TalentTier = {1}";
-        private const string GetAbilityByHeroNameAndHotkeyQueryString =
-            @"SELECT a.* FROM Ability a
-                INNER JOIN Hero h
-                ON h.Id = a.HeroId
-                WHERE h.ShortName LIKE '%{0}%' AND a.AbilityId LIKE '%|{1}%'";//cannot use hotkey, need to use AbilityId, because passive traits don't have a hotkey
-        private const string GetAbilityByHeroNameAndAbilityNameQueryString =
-            @"SELECT a.* FROM Ability a
-                INNER JOIN Hero h
-                ON h.Id = a.HeroId
-                WHERE h.ShortName LIKE '%{0}%' AND a.ShortName LIKE '%{1}%'";
         private List<string> AbilityKeys = new List<string>() { "q", "w", "e", "r", "d", "1", "2", "3", "4", "5", "6" };
         private List<string> Level10TalentTierExceptions = new List<string>() { "deathwing", "tracer", "varian" };
 
@@ -36,7 +19,7 @@ namespace HeroesInfoBot
         /// </summary>
         /// <param name="jsonLocation">File path to the folder with the Hero JSON data. Relative paths should work fine.</param>
         /// <param name="dbLocation">File path to where the database file will be created/reference. Relative paths should work fine.</param>
-        public HeroesBot(string jsonLocation, string dbLocation)
+        public HeroesLibrarian(string jsonLocation, string dbLocation)
         {
             _dbContext = new HeroDataDbContext(dbLocation);
             _contextSeeder = new HeroesInfoBotContextSeeder();
@@ -120,9 +103,16 @@ namespace HeroesInfoBot
         private List<CleanResultData> GetByAbilityOrTalentName(string name)
         {
             var returnList = new List<CleanResultData>();
-            var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByNameQueryString, name)).ToList();
-            var talentList = _dbContext.Talent.FromSql(string.Format(GetTalentByNameQueryString, name)).ToList();
+            var abilityList = (from a in _dbContext.Ability
+                               where a.ShortName.ToLower().Contains(name)
+                               select a
+                         ).ToList();
+            var talentList = (from t in _dbContext.Talent
+                               where t.ShortName.ToLower().Contains(name)
+                               select t
+                         ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
+            //rule out the duplicate talents we already got from abilities, most commonly heroic (R) abilities, based on AbilityId
             talentList = talentList.Where(tl => !abilityList.Exists(a => a.AbilityId == tl.AbilityId)).ToList();
             talentList.ForEach((t) => { returnList.Add(GetCleanResultData(t)); });
 
@@ -163,7 +153,12 @@ namespace HeroesInfoBot
                         break;
                 }
             }
-            var talentList = _dbContext.Talent.FromSql(string.Format(GetTalentTierByHeroNameQueryString, heroName, talentTier)).ToList();
+            var talentList = (from t in _dbContext.Talent
+                         join h in _dbContext.Hero
+                         on t.HeroId equals h.Id
+                         where h.ShortName.ToLower().Contains(heroName) && t.TalentTier.ToLower() == talentTier
+                         select t
+                         ).ToList();
             talentList.ForEach((t) => { returnList.Add(GetCleanResultData(t)); });
 
             return returnList;
@@ -176,7 +171,13 @@ namespace HeroesInfoBot
             {
                 hotkey = "d";
             }
-            var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndHotkeyQueryString, heroName, hotkey)).ToList();
+            var abId = $"|{hotkey}";
+            var abilityList = (from a in _dbContext.Ability
+                              join h in _dbContext.Hero
+                              on a.HeroId equals h.Id
+                              where h.ShortName.ToLower().Contains(heroName) && a.AbilityId.ToLower().Contains($"|{hotkey}")//cannot use Hotkey, need to use AbilityId, because passive traits don't have a hotkey
+                               select a
+                         ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             return returnList;
         }
@@ -184,7 +185,12 @@ namespace HeroesInfoBot
         private List<CleanResultData> GetByHeroNameAndAbilityName(string heroName, string abilityName)
         {
             var returnList = new List<CleanResultData>();
-            var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndAbilityNameQueryString, heroName, abilityName)).ToList();
+            var abilityList = (from a in _dbContext.Ability
+                               join h in _dbContext.Hero
+                               on a.HeroId equals h.Id
+                               where h.ShortName.ToLower().Contains(heroName) && a.ShortName.ToLower().Contains(abilityName)
+                               select a
+                         ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             return returnList;
         }

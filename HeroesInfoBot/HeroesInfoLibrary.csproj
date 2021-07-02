@@ -219,7 +219,7 @@
     <Compile Include="HeroesInfoBotService.Designer.cs">
       <DependentUpon>HeroesInfoBotService.cs</DependentUpon>
     </Compile>
-    <Compile Include="HeroesBot.cs" />
+    <Compile Include="HeroesLibrarian.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
