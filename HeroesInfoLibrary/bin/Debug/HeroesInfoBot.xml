@@ -4,48 +4,48 @@
         <name>HeroesInfoBot</name>
     </assembly>
     <members>
-        <member name="F:HeroesInfoBot.ProjectInstaller.components">
+        <member name="F:HeroesInfoLibrary.ProjectInstaller.components">
             <summary>
             Required designer variable.
             </summary>
         </member>
-        <member name="M:HeroesInfoBot.ProjectInstaller.Dispose(System.Boolean)">
+        <member name="M:HeroesInfoLibrary.ProjectInstaller.Dispose(System.Boolean)">
             <summary> 
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:HeroesInfoBot.ProjectInstaller.InitializeComponent">
+        <member name="M:HeroesInfoLibrary.ProjectInstaller.InitializeComponent">
             <summary>
             Required method for Designer support - do not modify
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="F:HeroesInfoBot.HeroesInfoBotService.components">
+        <member name="F:HeroesInfoLibrary.HeroesInfoBotService.components">
             <summary> 
             Required designer variable.
             </summary>
         </member>
-        <member name="M:HeroesInfoBot.HeroesInfoBotService.Dispose(System.Boolean)">
+        <member name="M:HeroesInfoLibrary.HeroesInfoBotService.Dispose(System.Boolean)">
             <summary>
             Clean up any resources being used.
             </summary>
             <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         </member>
-        <member name="M:HeroesInfoBot.HeroesInfoBotService.InitializeComponent">
+        <member name="M:HeroesInfoLibrary.HeroesInfoBotService.InitializeComponent">
             <summary> 
             Required method for Designer support - do not modify 
             the contents of this method with the code editor.
             </summary>
         </member>
-        <member name="M:HeroesInfoBot.HeroesLibrarian.#ctor(System.String,System.String)">
+        <member name="M:HeroesInfoLibrary.HeroesLibrarian.#ctor(System.String,System.String)">
             <summary>
             Constructor for the now-poorly-named HeroesInfoBot.
             </summary>
             <param name="jsonLocation">File path to the folder with the Hero JSON data. Relative paths should work fine.</param>
             <param name="dbLocation">File path to where the database file will be created/reference. Relative paths should work fine.</param>
         </member>
-        <member name="M:HeroesInfoBot.HeroesLibrarian.GetAbilityAndTalentDataByString(System.String)">
+        <member name="M:HeroesInfoLibrary.HeroesLibrarian.GetAbilityAndTalentDataByString(System.String)">
             <summary>
             The method to call to get Ability and Talent data. Supported forms of input are (case insensitive):
             [[Ability or Talent name]], i.e. [[Once Again the First Time]]

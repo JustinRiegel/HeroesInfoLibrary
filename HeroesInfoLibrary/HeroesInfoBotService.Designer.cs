@@ -1,4 +1,4 @@
-﻿namespace HeroesInfoBot
+﻿namespace HeroesInfoLibrary
 {
     partial class HeroesInfoBotService
     {

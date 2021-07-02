@@ -1,11 +1,11 @@
-﻿using HeroesInfoBot.Models;
+﻿using HeroesInfoLibrary.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
 
-namespace HeroesInfoBot
+namespace HeroesInfoLibrary
 {
     public class HeroesInfoBotContextSeeder
     {

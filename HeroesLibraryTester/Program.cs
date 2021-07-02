@@ -1,5 +1,5 @@
-﻿using System;
-using HeroesInfoBot;
+﻿using HeroesInfoLibrary;
+using System;
 
 namespace HeroesInfoLibraryTester
 {

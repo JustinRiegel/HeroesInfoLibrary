@@ -10,10 +10,10 @@ using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.IO;
 using Newtonsoft.Json;
-using HeroesInfoBot.Models;
+using HeroesInfoLibrary.Models;
 using System.Threading;
 
-namespace HeroesInfoBot
+namespace HeroesInfoLibrary
 {
     public partial class HeroesInfoBotService : ServiceBase
     {

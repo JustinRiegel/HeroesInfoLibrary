@@ -1,7 +1,7 @@
-﻿using HeroesInfoBot.Models;
+﻿using HeroesInfoLibrary.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace HeroesInfoBot
+namespace HeroesInfoLibrary
 {
     public class HeroDataDbContext : DbContext
     {

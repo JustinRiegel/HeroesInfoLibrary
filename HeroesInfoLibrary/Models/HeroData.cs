@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace HeroesInfoBot.Models
+namespace HeroesInfoLibrary.Models
 {
     public class HeroData
     {

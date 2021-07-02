@@ -50,7 +50,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\HeroesInfoBot\HeroesInfoLibrary.csproj">
+    <ProjectReference Include="..\HeroesInfoLibrary\HeroesInfoLibrary.csproj">
       <Project>{c70c4cc9-b2cd-4ae3-9c85-dce1e3076709}</Project>
       <Name>HeroesInfoLibrary</Name>
     </ProjectReference>

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 
-namespace HeroesInfoBot.Models
+namespace HeroesInfoLibrary.Models
 {
     public class Hero
     {
