@@ -266,7 +266,11 @@ namespace HeroesInfoLibrary
         {
             //need to check for heroic talent tier and if it is, return the heroic abilities instead.
             //exceptions: varian gets his at 4, tracer and deathwing both have theirs at the start and should return talents like normal
-            if((heroName == "varian" && talentTier == "4") || (!Level10TalentTierExceptions.Contains(heroName) && talentTier == "10"))
+            //chromie/8 and chromie/10 should both return the R-hotkey abilities
+            //chromie/10 is covered by the third check, but chromie/8 should be valid too, thus special case
+            if((heroName == "varian" && talentTier == "4") ||
+                (heroName == "chromie" && talentTier == "8") ||
+                (!Level10TalentTierExceptions.Contains(heroName) && talentTier == "10"))
             {
                 //because varian gets his R ability from his level 4 talent, it can be assumed the user is looking for the ability information, not the talent tier information
                 return GetByHeroNameAndAbilityHotkey(heroName, "r");
@@ -281,9 +285,6 @@ namespace HeroesInfoLibrary
                         break;
                     case "5":
                         talentTier = "7";
-                        break;
-                    case "8":
-                        talentTier = "10";
                         break;
                     case "11":
                         talentTier = "13";
