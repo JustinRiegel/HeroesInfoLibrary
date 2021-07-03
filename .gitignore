@@ -2,5 +2,5 @@
 # This .gitignore file was automatically created by Microsoft(R) Visual Studio.
 ################################################################################
 
-/.vs/HeroesInfoBot/v15
-/HeroesInfoBot/bin/Debug/HeroesOfTheStormHeroData.db
+/.vs/HeroesInfoLibrary/v15
+/HeroesInfoLibrary/bin/Debug/HeroesOfTheStormHeroData.db
