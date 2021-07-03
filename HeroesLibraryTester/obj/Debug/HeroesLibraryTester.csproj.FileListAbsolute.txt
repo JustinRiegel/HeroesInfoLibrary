@@ -1,9 +1,6 @@
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\x86\e_sqlite3.dll
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\x64\e_sqlite3.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesLibraryTester.exe.config
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesLibraryTester.exe
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesLibraryTester.pdb
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoBot.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Microsoft.EntityFrameworkCore.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Newtonsoft.Json.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Microsoft.EntityFrameworkCore.Sqlite.dll
@@ -27,9 +24,6 @@ C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debu
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Microsoft.Extensions.Primitives.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Microsoft.Extensions.Options.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\System.Runtime.CompilerServices.Unsafe.dll
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoBot.pdb
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoBot.xml
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoBot.dll.config
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Microsoft.EntityFrameworkCore.xml
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\Microsoft.EntityFrameworkCore.Sqlite.xml
@@ -54,3 +48,9 @@ C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\obj\Debu
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\obj\Debug\HeroesLibraryTester.csproj.CopyComplete
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\obj\Debug\HeroesLibraryTester.exe
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\obj\Debug\HeroesLibraryTester.pdb
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoLibrary.dll
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoLibrary.pdb
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoLibrary.xml
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\HeroesInfoLibrary.dll.config
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\x86\e_sqlite3.dll
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesLibraryTester\bin\Debug\x64\e_sqlite3.dll

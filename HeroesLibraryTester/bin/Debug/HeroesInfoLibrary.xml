@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>HeroesInfoLibrary</name>
+    </assembly>
+    <members>
+        <member name="F:HeroesInfoLibrary.ProjectInstaller.components">
+            <summary>
+            Required designer variable.
+            </summary>
+        </member>
+        <member name="M:HeroesInfoLibrary.ProjectInstaller.Dispose(System.Boolean)">
+            <summary> 
+            Clean up any resources being used.
+            </summary>
+            <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+        </member>
+        <member name="M:HeroesInfoLibrary.ProjectInstaller.InitializeComponent">
+            <summary>
+            Required method for Designer support - do not modify
+            the contents of this method with the code editor.
+            </summary>
+        </member>
+        <member name="M:HeroesInfoLibrary.HeroesLibrarian.#ctor(System.String,System.String)">
+            <summary>
+            Constructor for the HeroesLibrarian, able to fetch all the Heroes data you need from the library.
+            </summary>
+            <param name="jsonLocation">File path to the folder with the Hero JSON data. Relative paths should work fine.</param>
+            <param name="dbLocation">File path to where the database file will be created/reference. Relative paths should work fine.</param>
+        </member>
+        <member name="M:HeroesInfoLibrary.HeroesLibrarian.GetAbilityAndTalentDataByString(System.String)">
+            <summary>
+            The method to call to get Ability and Talent data. Supported forms of input are (case insensitive):
+            [[Ability or Talent name]], i.e. [[Once Again the First Time]]
+            [[Hero name/Talent name]], i.e. [[Chromie/Andorhal Anomaly]]
+            [[Hero name/Ability name]], i.e. [[Chromie/Sand Blast]]
+            [[Hero name/Ability hotkey]], i.e [[Chromie/Q]], works for Q,W,E,R,D,Trait,1,2,3,4,5,6
+            </summary>
+            <param name="input">The input string used to fetch the appropriate data. Despite the examples in the method summary, the [[ ]] should be stripped out before passing it in.</param>
+            <returns>Returns a List of strings, each entry of which is already formatted for display to the user.</returns>
+        </member>
+        <member name="T:HeroesInfoLibrary.CleanResultData">
+            <summary>
+            CleanResultData is a semi-abstracted class capable of holding pertinent data from both Abilities and Talents to be displayed to the user through the ToString() override.
+            It is meant to be able to hold data from both Abilities and Talents, but each of those has fields the other doesn't that need to be displayed.
+            </summary>
+        </member>
+    </members>
+</doc>

@@ -158,10 +158,6 @@ C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoBot\obj\Debug\Hero
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoBot\obj\Debug\HeroesInfoBot.pdb
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\x86\e_sqlite3.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\x64\e_sqlite3.dll
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoBot.dll.config
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoBot.xml
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoBot.dll
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoBot.pdb
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\Microsoft.Win32.Primitives.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\netstandard.dll
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\System.AppContext.dll
@@ -310,7 +306,11 @@ C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.csproj.GenerateResource.cache
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.csproj.CoreCompileInputs.cache
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.csproj.CopyComplete
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoBot.dll
-C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoBot.pdb
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.ProjectInstaller.resources
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoLibrary.dll.config
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoLibrary.xml
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoLibrary.dll
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\bin\Debug\HeroesInfoLibrary.pdb
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.dll
+C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.pdb
 C:\Users\Justin\My Stuff\GitHub Repos\HeroesInfoBot\HeroesInfoLibrary\obj\Debug\HeroesInfoLibrary.csproj.AssemblyReference.cache
