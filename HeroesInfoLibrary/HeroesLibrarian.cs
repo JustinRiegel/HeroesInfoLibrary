@@ -168,7 +168,7 @@ namespace HeroesInfoLibrary
             //var jsonLocation = ConfigurationManager.AppSettings.Get("jsonDataLocation");
             //var dbLocation = ConfigurationManager.AppSettings.Get("databaseLocation");
 
-            
+
             //CASE 1 (DONE) - talents and abilities by name [[Pyroblast]], [[Possession]]
             //CASE 2 (DONE) - all talents by hero's tier [[Lunara/4]], [[Butcher/10]]. because all talent tier levels are the same, extra logic will be needed to account for chromie
             //CASE 3 (DONE) - abilities by hero and slot [[Varian/W]], [[Murky/Trait]]
@@ -207,7 +207,7 @@ namespace HeroesInfoLibrary
                     //the user put in "butcher" but its called The Butcher in the database
                     inputPartOne = "thebutcher";
                 }
-                else if((inputPartOne.Contains("lost") && inputPartOne.Contains("vikings")) || inputPartOne.Contains("tlv"))
+                else if ((inputPartOne.Contains("lost") && inputPartOne.Contains("vikings")) || inputPartOne.Contains("tlv"))
                 {
                     inputPartOne = "lostvikings";
                 }
@@ -219,7 +219,7 @@ namespace HeroesInfoLibrary
                     {
                         inputPartTwo = "d";
                     }
-                    
+
                     resultList = GetByHeroNameAndTalentTier(inputPartOne, inputPartTwo);
                     resultList.AddRange(GetByHeroNameAndAbilityHotkey(inputPartOne, inputPartTwo));
                 }
@@ -251,8 +251,8 @@ namespace HeroesInfoLibrary
                                select a
                          ).ToList();
             var talentList = (from t in _dbContext.Talent
-                               where t.ShortName.ToLower().Contains(name)
-                               select t
+                              where t.ShortName.ToLower().Contains(name)
+                              select t
                          ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             //rule out the duplicate talents we already got from abilities, most commonly heroic (R) abilities, based on AbilityId
@@ -268,7 +268,7 @@ namespace HeroesInfoLibrary
             //exceptions: varian gets his at 4, tracer and deathwing both have theirs at the start and should return talents like normal
             //chromie/8 and chromie/10 should both return the R-hotkey abilities
             //chromie/10 is covered by the third check, but chromie/8 should be valid too, thus special case
-            if((heroName == "varian" && talentTier == "4") ||
+            if ((heroName == "varian" && talentTier == "4") ||
                 (heroName == "chromie" && talentTier == "8") ||
                 (!Level10TalentTierExceptions.Contains(heroName) && talentTier == "10"))
             {
@@ -277,11 +277,12 @@ namespace HeroesInfoLibrary
             }
             var returnList = new List<CleanResultData>();
             //in case someone uses chromie's actually talent tier levels, they need to be adjusted to match everyone else's, because that's what's in the database
-            if(heroName == "chromie")
+            if (heroName == "chromie")
             {
-                switch(talentTier)
+                switch (talentTier)
                 {
-                    case "2": talentTier = "4";
+                    case "2":
+                        talentTier = "4";
                         break;
                     case "5":
                         talentTier = "7";
@@ -298,10 +299,10 @@ namespace HeroesInfoLibrary
                 }
             }
             var talentList = (from t in _dbContext.Talent
-                         join h in _dbContext.Hero
-                         on t.HeroId equals h.Id
-                         where h.ShortName.ToLower().Contains(heroName) && t.TalentTier.ToLower() == talentTier
-                         select t
+                              join h in _dbContext.Hero
+                              on t.HeroId equals h.Id
+                              where h.ShortName.ToLower().Contains(heroName) && t.TalentTier.ToLower() == talentTier
+                              select t
                          ).ToList();
             talentList.ForEach((t) => { returnList.Add(GetCleanResultData(t)); });
 
@@ -311,15 +312,15 @@ namespace HeroesInfoLibrary
         private List<CleanResultData> GetByHeroNameAndAbilityHotkey(string heroName, string hotkey)
         {
             var returnList = new List<CleanResultData>();
-            if(hotkey == "trait")
+            if (hotkey == "trait")
             {
                 hotkey = "d";
             }
             var abId = $"|{hotkey}";
             var abilityList = (from a in _dbContext.Ability
-                              join h in _dbContext.Hero
-                              on a.HeroId equals h.Id
-                              where h.ShortName.ToLower().Contains(heroName) && a.AbilityId.ToLower().Contains($"|{hotkey}")//cannot use Hotkey, need to use AbilityId, because passive traits don't have a hotkey
+                               join h in _dbContext.Hero
+                               on a.HeroId equals h.Id
+                               where h.ShortName.ToLower().Contains(heroName) && a.AbilityId.ToLower().Contains($"|{hotkey}")//cannot use Hotkey, need to use AbilityId, because passive traits don't have a hotkey
                                select a
                          ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
@@ -421,7 +422,7 @@ namespace HeroesInfoLibrary
         public override string ToString()
         {
             //TODO add specific statement denoting Talent or Ability?
-            if(string.IsNullOrEmpty(TalentTier))//talent tier is empty, so its an ability
+            if (string.IsNullOrEmpty(TalentTier))//talent tier is empty, so its an ability
             {
                 return $"{Name} ({HeroName}) - " + (string.IsNullOrEmpty(Hotkey) ? string.Empty : $"[{Hotkey}]{Environment.NewLine}") +
                     (string.IsNullOrEmpty(ManaCost) ? string.Empty : $"Ability cost: {ManaCost}{Environment.NewLine}") +

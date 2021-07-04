@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2B202CAC-61B6-453E-BB83-90B372667B24}</ProjectGuid>
+    <ProjectGuid>{765B2062-8984-4F12-B168-2EF6A41AE161}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>HeroesLibraryTester</RootNamespace>
     <AssemblyName>HeroesLibraryTester</AssemblyName>
@@ -51,7 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HeroesInfoLibrary\HeroesInfoLibrary.csproj">
-      <Project>{c70c4cc9-b2cd-4ae3-9c85-dce1e3076709}</Project>
+      <Project>{67314e18-3a44-4c04-913f-3fe3120c721c}</Project>
       <Name>HeroesInfoLibrary</Name>
     </ProjectReference>
   </ItemGroup>
