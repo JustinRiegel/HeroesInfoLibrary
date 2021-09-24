@@ -3,14 +3,36 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using System.Runtime.CompilerServices;
+//using SQLitePCL;
 
 namespace HeroesInfoLibrary
 {
     public class HeroesLibrarian
     {
-        #region Member variables 
+        #region Member variables
+
+        private const string GetAbilityByNameQueryString = "SELECT * FROM Ability WHERE ShortName LIKE {0}";
+        private const string GetTalentByNameQueryString = "SELECT * FROM Talent WHERE ShortName LIKE {0}";
+        private const string GetTalentTierByHeroNameQueryString =
+            @"SELECT t.* FROM Talent t
+                INNER JOIN Hero h
+                ON h.Id = t.HeroId
+                WHERE h.ShortName LIKE {0} AND t.TalentTier = {1}";
+        private const string GetAbilityByHeroNameAndHotkeyQueryString =
+            @"SELECT a.* FROM Ability a
+                INNER JOIN Hero h
+                ON h.Id = a.HeroId
+                WHERE h.ShortName LIKE {0} AND a.AbilityId LIKE {1}";//cannot use hotkey, need to use AbilityId, because passive traits don't have a hotkey
+        private const string GetAbilityByHeroNameAndAbilityNameQueryString =
+            @"SELECT a.* FROM Ability a
+                INNER JOIN Hero h
+                ON h.Id = a.HeroId
+                WHERE h.ShortName LIKE {0} AND a.ShortName LIKE {1}";
+
         private List<string> AbilityKeys = new List<string>() { "q", "w", "e", "r", "d", "1", "2", "3", "4", "5", "6" };
         private List<string> Level10TalentTierExceptions = new List<string>() { "deathwing", "tracer", "varian" };
 
@@ -40,7 +62,9 @@ namespace HeroesInfoLibrary
         {
             string jsonStringData;
 
-            SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_e_sqlite3());
+            SQLitePCL.Batteries_V2.Init();
+
+            //SQLitePCL.raw.SetProvider(new SQLitePCL.SQLite3Provider_e_sqlite3());
 
             _dbContext.Database.EnsureDeleted();
             _dbContext.Database.EnsureCreated();
@@ -243,17 +267,27 @@ namespace HeroesInfoLibrary
 
         #region Database queries
 
+        //all of these queries are using FromSqlInterpolated to prevent against SQL injection attacks. at least that's what the documentation tells me
+
         private List<CleanResultData> GetByAbilityOrTalentName(string name)
         {
+            name = $"%{name}%";
+
             var returnList = new List<CleanResultData>();
-            var abilityList = (from a in _dbContext.Ability
-                               where a.ShortName.ToLower().Contains(name)
-                               select a
-                         ).ToList();
-            var talentList = (from t in _dbContext.Talent
-                              where t.ShortName.ToLower().Contains(name)
-                              select t
-                         ).ToList();
+
+            //var tempAbilityList = _dbContext.Ability.FromSqlInterpolated($"SELECT * FROM Ability WHERE ShortName LIKE {name}").ToList();
+            var abilityList = _dbContext.Ability.FromSqlInterpolated(FormattableStringFactory.Create(GetAbilityByNameQueryString, name)).ToList();
+            var talentList = _dbContext.Talent.FromSqlInterpolated(FormattableStringFactory.Create(GetTalentByNameQueryString, name)).ToList();
+            //var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByNameQueryString, name)).ToList();
+            //var talentList = _dbContext.Talent.FromSql(string.Format(GetTalentByNameQueryString, name)).ToList();
+            //var abilityList = (from a in _dbContext.Ability
+            //                   where a.ShortName.ToLower().Contains(name)
+            //                   select a
+            //             ).ToList();
+            //var talentList = (from t in _dbContext.Talent
+            //                  where t.ShortName.ToLower().Contains(name)
+            //                  select t
+            //             ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             //rule out the duplicate talents we already got from abilities, most commonly heroic (R) abilities, based on AbilityId
             talentList = talentList.Where(tl => !abilityList.Exists(a => a.AbilityId == tl.AbilityId)).ToList();
@@ -275,6 +309,11 @@ namespace HeroesInfoLibrary
                 //because varian gets his R ability from his level 4 talent, it can be assumed the user is looking for the ability information, not the talent tier information
                 return GetByHeroNameAndAbilityHotkey(heroName, "r");
             }
+
+            //we have to do add the wild cards here because the above part calls another function that will add them for us. they're wildcards, it probably wouldnt hurt, but this looks cleaner
+            heroName = $"%{heroName}%";
+            talentTier = $"{talentTier}";
+
             var returnList = new List<CleanResultData>();
             //in case someone uses chromie's actually talent tier levels, they need to be adjusted to match everyone else's, because that's what's in the database
             if (heroName == "chromie")
@@ -298,12 +337,14 @@ namespace HeroesInfoLibrary
                         break;
                 }
             }
-            var talentList = (from t in _dbContext.Talent
-                              join h in _dbContext.Hero
-                              on t.HeroId equals h.Id
-                              where h.ShortName.ToLower().Contains(heroName) && t.TalentTier.ToLower() == talentTier
-                              select t
-                         ).ToList();
+            var talentList = _dbContext.Talent.FromSqlInterpolated(FormattableStringFactory.Create(GetTalentTierByHeroNameQueryString, heroName, talentTier)).ToList();
+            //var talentList = _dbContext.Talent.FromSql(string.Format(GetTalentTierByHeroNameQueryString, heroName, talentTier)).ToList();
+            //var talentList = (from t in _dbContext.Talent
+            //                  join h in _dbContext.Hero
+            //                  on t.HeroId equals h.Id
+            //                  where h.ShortName.ToLower().Contains(heroName) && t.TalentTier.ToLower() == talentTier
+            //                  select t
+            //             ).ToList();
             talentList.ForEach((t) => { returnList.Add(GetCleanResultData(t)); });
 
             return returnList;
@@ -316,26 +357,36 @@ namespace HeroesInfoLibrary
             {
                 hotkey = "d";
             }
-            var abId = $"|{hotkey}";
-            var abilityList = (from a in _dbContext.Ability
-                               join h in _dbContext.Hero
-                               on a.HeroId equals h.Id
-                               where h.ShortName.ToLower().Contains(heroName) && a.AbilityId.ToLower().Contains($"|{hotkey}")//cannot use Hotkey, need to use AbilityId, because passive traits don't have a hotkey
-                               select a
-                         ).ToList();
+
+            heroName = $"%{heroName}%";
+            hotkey = $"%|{hotkey}%";
+
+            var abilityList = _dbContext.Ability.FromSqlInterpolated(FormattableStringFactory.Create(GetAbilityByHeroNameAndHotkeyQueryString, heroName, hotkey)).ToList();
+            //var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndHotkeyQueryString, heroName, hotkey)).ToList();
+            //var abilityList = (from a in _dbContext.Ability
+            //                   join h in _dbContext.Hero
+            //                   on a.HeroId equals h.Id
+            //                   where h.ShortName.ToLower().Contains(heroName) && a.AbilityId.ToLower().Contains($"|{hotkey}")//cannot use Hotkey, need to use AbilityId, because passive traits don't have a hotkey
+            //                   select a
+            //             ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             return returnList;
         }
 
         private List<CleanResultData> GetByHeroNameAndAbilityName(string heroName, string abilityName)
         {
+            heroName = $"%{heroName}%";
+            abilityName = $"%{abilityName}%";
+
             var returnList = new List<CleanResultData>();
-            var abilityList = (from a in _dbContext.Ability
-                               join h in _dbContext.Hero
-                               on a.HeroId equals h.Id
-                               where h.ShortName.ToLower().Contains(heroName) && a.ShortName.ToLower().Contains(abilityName)
-                               select a
-                         ).ToList();
+            var abilityList = _dbContext.Ability.FromSqlInterpolated(FormattableStringFactory.Create(GetAbilityByHeroNameAndAbilityNameQueryString, heroName, abilityName)).ToList();
+            //var abilityList = _dbContext.Ability.FromSql(string.Format(GetAbilityByHeroNameAndAbilityNameQueryString, heroName, abilityName)).ToList();
+            //var abilityList = (from a in _dbContext.Ability
+            //                   join h in _dbContext.Hero
+            //                   on a.HeroId equals h.Id
+            //                   where h.ShortName.ToLower().Contains(heroName) && a.ShortName.ToLower().Contains(abilityName)
+            //                   select a
+            //             ).ToList();
             abilityList.ForEach((a) => { returnList.Add(GetCleanResultData(a)); });
             return returnList;
         }

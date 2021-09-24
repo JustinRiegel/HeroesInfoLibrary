@@ -1,14 +1,14 @@
 ﻿using HeroesInfoLibrary;
 using System;
 
-namespace HeroesInfoLibraryTester
+namespace HeroesLibraryTester
 {
     class Program
     {
         static void Main(string[] args)
         {
             Console.WriteLine("Hello World!");
-            var library = new HeroesLibrarian("../../../../Heroes-talents/heroes-talents-master/hero", "HeroesOfTheStormHeroData.db");
+            var library = new HeroesLibrarian("../../../../../Heroes-talents/heroes-talents-master/hero", "HeroesOfTheStormHeroData.db");
             var input = Console.ReadLine();
             while (input != "q")
             {
