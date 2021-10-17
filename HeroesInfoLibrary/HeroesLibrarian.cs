@@ -219,8 +219,8 @@ namespace HeroesInfoLibrary
             //does the input contain the separator character
             if (input.Contains('/'))
             {
-                var inputPartOne = input.Split('/')[0];
-                var inputPartTwo = input.Split('/')[1];
+                var inputPartOne = input.Split('/')[0].Replace("'", "");
+                var inputPartTwo = input.Split('/')[1].Replace("'", "");
 
                 //clean up input a bit to account for some name weirdness in the database.
                 //TODO: this is honestly just a sto-gap, because i'd really like to have a column in the hero table that is a semicolon-delimited list of "similar names".
@@ -234,6 +234,18 @@ namespace HeroesInfoLibrary
                 else if ((inputPartOne.Contains("lost") && inputPartOne.Contains("vikings")) || inputPartOne.Contains("tlv"))
                 {
                     inputPartOne = "lostvikings";
+                }
+                else if (inputPartOne == "about" && inputPartTwo == "me")
+                {
+                    resultList = new List<CleanResultData>() { new CleanResultData("The Bot", "About me", "", "",
+                        $"I can retrieve specific talent and ability data for a hero! I accept 4 forms of input:{Environment.NewLine}" +
+                        $"1: [[ability_name]], i.e. [[Sand Blast]].{Environment.NewLine}" +
+                        $"2: [[hero_name/talent_tier]], i.e. [[Jaina/7]].{Environment.NewLine}" +
+                        $"3: [[hero_name/hotkey]], i.e. [[Kael'thas/Q]], [[Sylvanas/D]].{Environment.NewLine}" +
+                        $"4: [[hero_name/ability_name]], i.e. [[Mei/Blizzard]].{Environment.NewLine}" +
+                        $"Inputs should be bounded by 2 open/close square brackets, are not case-sensitive, and do not need apostrophes.",
+                        "","")};
+                    return resultList;
                 }
 
                 //if the second part is numeric or is an ability key, we want to use both those queries, as there is overlap between number buttons and talent tiers
@@ -439,7 +451,7 @@ namespace HeroesInfoLibrary
             //the abilityId takes 1 of 2 forms: Chromie|Q1 [hotkey, then sort order], or Chromie|Passive
             //in the first case, the first character after the pipe is the actual hotkey
             //in the second, it is either "Active" or "Passive"
-            //because of thise, we can do a length check to parse out the data we're actually looking for
+            //because of this, we can do a length check to parse out the data we're actually looking for
             //this holds true for both Talents and Abilities
             var hotkey = string.Empty;
             if (!string.IsNullOrEmpty(abilityId))
